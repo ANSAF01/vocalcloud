@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VocalCloud - Mentorship Audio Intelligence</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-badge">VC</div>
+        <div>
+          <h1 class="brand-title">VocalCloud</h1>
+          <p class="brand-sub">Mentorship Session Audio Intelligence - Built by Ansaf</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="main-container">
+    <!-- Input Workspace Section -->
+    <section id="inputSection" class="section">
+      <div class="hero-text">
+        <h2>What was this session actually about?</h2>
+        <p>Record or upload a mentorship recording to transcribe speech and generate an interactive word cloud.</p>
+      </div>
+
+      <!-- Mode Selector Tabs -->
+      <div class="tab-bar">
+        <button id="tabRecord" class="tab-btn active">Record Live Audio</button>
+        <button id="tabUpload" class="tab-btn">Upload Audio File</button>
+      </div>
+
+      <!-- Alert Message Box -->
+      <div id="errorAlert" class="alert alert-danger hidden">
+        <span id="errorMessage"></span>
+      </div>
+
+      <!-- Loading State Overlay -->
+      <div id="loadingState" class="card loading-card hidden">
+        <div class="spinner"></div>
+        <h3 id="loadingTitle">Processing Audio</h3>
+        <p id="loadingSubtitle" class="loading-sub">Transcribing audio and generating word cloud with AI...</p>
+      </div>
+
+      <!-- RECORD TAB PANEL -->
+      <div id="panelRecord" class="card tab-panel">
+        <div id="recReadyState" class="rec-box">
+          <button id="startRecBtn" class="btn-mic-icon">Record</button>
+          <h3>Start Live Recording</h3>
+          <p class="sub-text">Click button to begin recording. Maximum 10 minutes (4.5 MB limit).</p>
+        </div>
+
+        <div id="recLiveState" class="rec-box hidden">
+          <div class="recording-indicator">
+            <span class="ping-dot"></span>
+            <span id="recTimer" class="timer-text">00:00</span>
+          </div>
+          <canvas id="visualizerCanvas" width="300" height="50"></canvas>
+          <p class="recording-sub">Recording in progress. Speak clearly into your microphone.</p>
+          <button id="stopRecBtn" class="btn btn-danger">Stop Recording</button>
+        </div>
+
+        <div id="recReviewState" class="rec-box hidden">
+          <h3>Review Recording (<span id="reviewDuration">00:00</span>)</h3>
+          <audio id="previewAudioPlayer" controls class="audio-preview"></audio>
+          <div class="btn-row">
+            <button id="discardRecBtn" class="btn btn-secondary">Discard & Retake</button>
+            <button id="commitRecBtn" class="btn btn-primary">Analyze Audio</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPLOAD TAB PANEL -->
+      <div id="panelUpload" class="card tab-panel hidden">
+        <p class="ceiling-notice">Limit: Max 4.5 MB file size or 10 minutes duration</p>
+        
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="fileInput" accept=".mp3,.wav,.m4a,.aac,.ogg,.webm,.flac,audio/*" hidden>
+          <h3>Drag and drop audio file here</h3>
+          <p class="sub-text">or <span class="link-text">browse files</span></p>
+          <p class="format-list">Accepted Formats: MP3, WAV, M4A, AAC, OGG, WEBM, FLAC</p>
+        </div>
+
+        <div id="fileOverview" class="file-card hidden">
+          <div class="file-info">
+            <div>
+              <h4 id="fileNameText">recording.mp3</h4>
+              <p id="fileMetaText">4.2 MB</p>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button id="clearFileBtn" class="btn btn-secondary">Cancel</button>
+            <button id="commitFileBtn" class="btn btn-primary">Analyze Audio</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Analysis Results Section -->
+    <section id="resultSection" class="section hidden">
+      <div class="session-header card">
+        <div>
+          <h2 id="resultFileName">session.wav</h2>
+          <p id="resultMeta" class="sub-text">Audio File Analyzed</p>
+        </div>
+        <button id="resetBtn" class="btn btn-secondary">Analyze Another File</button>
+      </div>
+
+      <!-- View Navigation -->
+      <div class="view-toolbar">
+        <div class="view-tabs">
+          <button id="btnTabCloud" class="vtab-btn active">Word Cloud</button>
+          <button id="btnTabTable" class="vtab-btn">Frequency Table</button>
+          <button id="btnTabTranscript" class="vtab-btn">Transcript</button>
+        </div>
+      </div>
+
+      <!-- Word Exclusion Filter -->
+      <div class="card exclude-toolbar">
+        <div class="exclude-row">
+          <span class="exclude-label">Filter Words</span>
+          <form id="excludeForm" class="exclude-form">
+            <input type="text" id="excludeInput" placeholder="Type word to exclude...">
+            <button type="submit" class="btn btn-secondary text-xs">Exclude</button>
+          </form>
+        </div>
+        <div id="excludedPills" class="pills-container"></div>
+      </div>
+
+      <!-- VIEW 1: WORD CLOUD CANVAS -->
+      <div id="viewCloud" class="view-panel">
+        <div class="canvas-box card">
+          <canvas id="cloudCanvas"></canvas>
+          <button id="downloadPngBtn" class="btn btn-primary btn-png">Download PNG</button>
+        </div>
+      </div>
+
+      <!-- VIEW 2: FREQUENCY TABLE -->
+      <div id="viewTable" class="view-panel hidden">
+        <div class="card table-box">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Term</th>
+                <th>Frequency</th>
+                <th>Importance</th>
+                <th class="text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VIEW 3: TRANSCRIPT -->
+      <div id="viewTranscript" class="view-panel hidden">
+        <div class="card transcript-box">
+          <div class="transcript-header">
+            <h3>Transcript</h3>
+            <div class="transcript-actions">
+              <input type="text" id="transcriptSearch" placeholder="Search transcript...">
+              <button id="copyTranscriptBtn" class="btn btn-secondary text-xs">Copy</button>
+              <button id="downloadTxtBtn" class="btn btn-secondary text-xs">Export .txt</button>
+            </div>
+          </div>
+          <div id="summaryBox" class="summary-box"></div>
+          <div id="transcriptText" class="transcript-text"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    VocalCloud - Mentorship Session Audio Intelligence - Built by Ansaf
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
