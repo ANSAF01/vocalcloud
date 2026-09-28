@@ -557,6 +557,41 @@ body {
   margin-top: 6px;
 }
 
+/* Portfolio links & Interactive Brand */
+.portfolio-link {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.portfolio-link:hover {
+  color: #818cf8;
+}
+
+.brand {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.brand:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-back-home:hover {
+  transform: translateX(-2px);
+}
+
 /* Footer */
 .footer {
   text-align: center;

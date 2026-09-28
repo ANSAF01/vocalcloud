@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VocalCloud - Mentorship Audio Intelligence</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,13 +13,16 @@
   <!-- Navigation Header -->
   <header class="header">
     <div class="header-container">
-      <div class="brand">
+      <div class="brand" id="headerBrand" title="Click to reset and go home">
         <div class="brand-badge">VC</div>
         <div>
           <h1 class="brand-title">VocalCloud</h1>
-          <p class="brand-sub">Mentorship Session Audio Intelligence - Built by Ansaf</p>
+          <p class="brand-sub">Mentorship Session Audio Intelligence - Built by <a href="https://portfolio.arclines.in" target="_blank" rel="noopener noreferrer" class="portfolio-link" onclick="event.stopPropagation();">Ansaf</a></p>
         </div>
       </div>
+      <button id="navBackBtn" class="btn btn-secondary nav-back-btn hidden">
+        ← Back to Home
+      </button>
     </div>
   </header>
 
@@ -111,7 +114,9 @@
           <h2 id="resultFileName">session.wav</h2>
           <p id="resultMeta" class="sub-text">Audio File Analyzed</p>
         </div>
-        <button id="resetBtn" class="btn btn-secondary">Analyze Another File</button>
+        <button id="resetBtn" class="btn btn-secondary btn-back-home">
+          ← Analyze Another File
+        </button>
       </div>
 
       <!-- View Navigation -->
@@ -180,9 +185,9 @@
 
   <!-- Footer -->
   <footer class="footer">
-    VocalCloud - Mentorship Session Audio Intelligence - Built by Ansaf
+    VocalCloud - Mentorship Session Audio Intelligence • Built by <a href="https://portfolio.arclines.in" target="_blank" rel="noopener noreferrer" class="portfolio-link">Ansaf (portfolio.arclines.in)</a>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>

@@ -203,35 +203,35 @@ commitFileBtn.addEventListener('click', () => {
   if (selectedFile) processAudio(selectedFile, selectedFile.name);
 });
 
-// Send audio to backend Express API endpoint
-async function processAudio(fileOrBlob, filename) {
+const navBackBtn = document.getElementById('navBackBtn');
+
+function processAudio(fileOrBlob, filename) {
   loadingState.classList.remove('hidden');
   panelRecord.classList.add('hidden');
   panelUpload.classList.add('hidden');
   hideError();
+  if (navBackBtn) navBackBtn.classList.remove('hidden');
 
   const formData = new FormData();
   formData.append('audio', fileOrBlob, filename);
 
-  try {
-    const res = await fetch('/api/analyze', {
-      method: 'POST',
-      body: formData
-    });
-
+  fetch('/api/analyze', {
+    method: 'POST',
+    body: formData
+  })
+  .then(async res => {
     const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || 'Failed to analyze audio file.');
-    }
-
+    if (!res.ok) throw new Error(data.error || 'Failed to analyze audio file.');
     renderAnalysisResult(data);
-  } catch (err) {
+  })
+  .catch(err => {
     showError(err.message);
     switchTab(currentTab);
-  } finally {
+    if (navBackBtn) navBackBtn.classList.add('hidden');
+  })
+  .finally(() => {
     loadingState.classList.add('hidden');
-  }
+  });
 }
 
 // Display analysis results and word cloud
@@ -250,13 +250,27 @@ function renderAnalysisResult(data) {
 
   inputSection.classList.add('hidden');
   resultSection.classList.remove('hidden');
+  if (navBackBtn) navBackBtn.classList.remove('hidden');
 }
 
-resetBtn.addEventListener('click', () => {
+function resetToHome() {
   resultSection.classList.add('hidden');
   inputSection.classList.remove('hidden');
   switchTab('record');
-});
+  if (navBackBtn) navBackBtn.classList.add('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+resetBtn.addEventListener('click', resetToHome);
+
+if (navBackBtn) {
+  navBackBtn.addEventListener('click', resetToHome);
+}
+
+const headerBrand = document.getElementById('headerBrand');
+if (headerBrand) {
+  headerBrand.addEventListener('click', resetToHome);
+}
 
 // Render Word Cloud on HTML5 Canvas using Archimedean spiral algorithm
 function renderWordCloud() {
@@ -280,7 +294,13 @@ function renderWordCloud() {
   }
 
   const activeWords = currentAnalysis.words.filter(w => !excludedWords.has(w.text.toLowerCase()));
-  if (activeWords.length === 0) return;
+  if (activeWords.length === 0) {
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '500 15px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No speech or keywords detected in this audio recording.', width / 2, height / 2);
+    return;
+  }
 
   const maxCount = Math.max(...activeWords.map(w => w.count), 1);
   const minCount = Math.min(...activeWords.map(w => w.count), 1);

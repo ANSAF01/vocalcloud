@@ -2,87 +2,58 @@
 
 **Built by**: Ansaf  
 
-A minimal, fast web application built with Node.js, Express.js, HTML5 Canvas, and Vanilla JavaScript to transcribe audio from mentorship sessions and generate an interactive word cloud.
+A clean, fast web application built with Node.js, Express.js, EJS, HTML5 Canvas, and Vanilla JavaScript to transcribe audio from mentorship sessions and generate interactive word clouds powered by Google Gemini AI.
 
 ---
 
-## 01. What Was Built and What Works
+## 01. Features & Architecture
 
-- **Live Audio Recorder**: Web MediaRecorder API with live visualizer canvas, timer counter (MM:SS), playback preview, and mic permission denial error handling.
-- **File Uploader**: Drag-and-drop file uploader supporting MP3, WAV, M4A, AAC, OGG, WEBM, FLAC. Enforces max file size (25 MB) and 10-minute audio limit.
-- **AI Analysis Engine**: Express POST endpoint `/api/analyze` using Google Gemini 1.5 Flash API to transcribe speech, strip filler words ("um", "uh", "like"), normalize plurals/case, and calculate word importance scores.
-- **Word Cloud Renderer**: HTML5 Canvas Archimedean spiral word cloud renderer with single-click PNG download button, word exclusion filter, and transcript search viewer.
+- **Live Audio Recorder**: Web MediaRecorder API with live timer counter (MM:SS), playback preview, and mic permission error handling.
+- **File Uploader**: Drag-and-drop file uploader supporting MP3, WAV, M4A, AAC, OGG, WEBM, FLAC (Up to 4.5 MB serverless limit).
+- **AI Audio Intelligence**: Express POST endpoint `/api/analyze` powered by Google Gemini AI (`gemini-3.8-flash`) to transcribe speech, summarize key points, and extract frequency metrics.
+- **Word Cloud Engine**: Lightweight HTML5 Canvas Archimedean spiral word cloud renderer with single-click PNG download, word exclusion filtering, frequency tables, and transcript search.
+- **Templating**: EJS template rendering engine for dynamic HTML views.
 
 ---
 
-## 02. Project Directory Structure
+## 02. Project Structure
 
 ```
 vocalcloud/
-├── package.json
-├── .env.example
-├── .gitignore
-├── server.js (Application Entry Point)
-├── src/
-│   ├── config/
-│   │   └── constants.js (Size limits and format configurations)
-│   ├── controllers/
-│   │   └── audioController.js (Controller for /api/analyze requests)
-│   ├── services/
-│   │   ├── geminiService.js (Service handling Google Gemini API)
-│   │   └── nlpService.js (Service handling word normalization & frequency)
-│   └── routes/
-│       └── audioRoutes.js (Express router & Multer file upload handling)
-└── public/ (Static Assets & Views)
-    ├── index.html
-    ├── style.css
-    └── app.js
+├── server.js           <-- Main Express server + Multer + Gemini AI endpoint
+├── package.json        <-- Dependencies (express, ejs, multer, dotenv)
+├── vercel.json         <-- Vercel deployment configuration
+├── .env                <-- Environment variables (GEMINI_API_KEY, PORT)
+├── views/
+│   └── index.ejs       <-- EJS view template
+└── public/             <-- Static client assets
+    ├── style.css       <-- CSS Design system & layout styling
+    └── app.js          <-- Client audio recording, upload & word cloud renderer
 ```
 
 ---
 
 ## 03. How to Run Locally
 
-Follow these exact steps in order:
-
 ```bash
-# 1. Navigate into the project directory
-cd vocalcloud
-
-# 2. Install dependencies
+# 1. Install dependencies
 npm install
 
-# 3. Create .env file
-cp .env.example .env
-
-# Add your Gemini API key inside .env:
+# 2. Configure environment variables in .env:
 # GEMINI_API_KEY=your_gemini_api_key_here
+# PORT=5000
 
-# 4. Start the server
+# 3. Start the server
 npm start
 ```
 
-Open http://localhost:5000 in your browser.
+Open `http://localhost:5000` in your browser.
 
 ---
 
-## 04. AI Service Selection and Rationale
+## 04. Third-Party Libraries
 
-- **AI Provider**: Google Gemini 1.5 Flash API via Gemini AI Studio.
-- **Rationale**: Gemini Flash supports direct inline audio payload processing, returning both accurate transcript text and structured JSON keyword metrics in a single pass.
-
----
-
-## 05. Architectural Decisions and Trade-offs
-
-1. **Server-Side API Key Protection**: The API key is stored strictly in server environment variables (.env) and never exposed in client JavaScript.
-2. **HTML5 Canvas Engine for Word Cloud**: Utilized plain HTML5 Canvas drawing APIs for lightweight execution and instant PNG image exports via `canvas.toDataURL()`.
-3. **No User Accounts or Authentication**: Deliberately excluded authentication systems to keep focus purely on core audio transcription and visualization.
-
----
-
-## 06. Third-Party Libraries Used
-
-- `express` (v4.21) - Web server framework
-- `multer` (v1.4) - File upload processing middleware
-- `dotenv` (v16.4) - Environment variable management
+- `express` - Minimalist Node.js web framework
+- `ejs` - Embedded JavaScript template engine
+- `multer` - File upload handling middleware
+- `dotenv` - Environment variable management
